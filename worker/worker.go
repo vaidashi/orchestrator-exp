@@ -63,7 +63,16 @@ func (w *Worker) AddTask(t task.Task) {
 func (w *Worker) CollectStats() {
     fmt.Println("I will collect stats")
 }
- 
+
+func (w *Worker) GetTasks() []*task.Task {
+	tasks := []*task.Task{}
+
+	for _, t := range w.Db {
+		tasks = append(tasks, t)
+	}
+	return tasks
+}
+
 func (w *Worker) StartTask(t task.Task) task.DockerResult {
 	t.StartTime = time.Now().UTC()
 	config := task.NewConfig(&t)
