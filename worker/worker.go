@@ -19,7 +19,7 @@ type Worker struct {
     TaskCount int
 }
 
-func (w *Worker) RunTask() task.DockerResult {
+func (w *Worker) runTask() task.DockerResult {
     t := w.Queue.Dequeue()
 
 	if t == nil {
@@ -44,10 +44,10 @@ func (w *Worker) RunTask() task.DockerResult {
 		case task.Completed:
 			result = w.StopTask(taskQueued)
 		default:
-			result.Error = errors.New("Invalid state transition")
+			result.Error = errors.New("invalid state transition")
 		}
 	} else {
-		err := fmt.Errorf("Invalid transition from %v to %v", taskPersisted.State, taskQueued.State)
+		err := fmt.Errorf("invalid transition from %v to %v", taskPersisted.State, taskQueued.State)
 		result.Error = err
 		return result
 	}
@@ -115,4 +115,22 @@ func (w *Worker) StopTask(t task.Task) task.DockerResult {
 	log.Printf("Stopped and removed container %v for task %v\n", t.ContainerID, t.ID)
 
 	return result
+}
+
+
+func (w *Worker) RunTasks() {
+	for {
+		if w.Queue.Len() != 0 {
+			result := w.runTask()
+
+			if result.Error != nil {
+				log.Printf("Error running task: %v\n", result.Error)
+			}
+		} else {
+			log.Printf("No tasks to process currently.\n")
+		}
+
+		log.Println("Sleeping for 10 seconds.")
+		time.Sleep(10 * time.Second)
+	}
 }
