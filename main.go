@@ -2,23 +2,31 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
 	"github.com/golang-collections/collections/queue"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 
+	"orchestrator-exp/manager"
 	"orchestrator-exp/task"
 	"orchestrator-exp/worker"
-	"orchestrator-exp/manager"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
 	whost := os.Getenv("WORKER_HOST")
-    wport, _ := strconv.Atoi(os.Getenv("WORKER_PORT"))
- 
-    mhost := os.Getenv("MANAGER_HOST")
-    mport, _ := strconv.Atoi(os.Getenv("MANAGER_PORT"))
+	wport, _ := strconv.Atoi(os.Getenv("WORKER_PORT"))
+
+	mhost := os.Getenv("MANAGER_HOST")
+	mport, _ := strconv.Atoi(os.Getenv("MANAGER_PORT"))
 
 	fmt.Println("Starting worker")
 
